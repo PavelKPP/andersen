@@ -21,6 +21,6 @@ public abstract class Entity {
     }
 
     public void print(){
-        System.out.println("displaying content: ");
+        System.out.println("print content in console: ");
     }
 }
