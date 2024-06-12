@@ -1,97 +1,75 @@
 package com.ticketservice.model;
 
+import com.ticketservice.abstraction.Entity;
+import com.ticketservice.abstraction.Share;
+import com.ticketservice.annotation.interfaces.NullableWarning;
+import com.ticketservice.validators.EmailAdressValidator;
+import com.ticketservice.validators.PhoneNumberValidator;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class Ticket {
+public class Ticket extends Entity implements Share {
 
-    private long id;
+    @NullableWarning
     private String concertHall;
-    private short eventCode;
-    private LocalDateTime creationDateTime;
-    private boolean isPromo;
-    private char stadiumSector;
+    private short eventCode;//
+    private LocalDateTime creationDateTime;//
+    private boolean isPromo;//
+    private char stadiumSector;//
     private double maxBackpackWeight;
-    private BigDecimal price;
+    private BigDecimal price;//
 
 
     public Ticket() {
+
     }
 
-    public Ticket(int id, short eventCode, boolean isPromo) {
-        if (id / 1000 > 9) {
-            throw new IllegalArgumentException("id should be less than 4 digits");
-        }
-        if (eventCode / 100 > 9) {
-            throw new IllegalArgumentException("event code should be less than 4 digits");
-        }
+    public Ticket(long id, String concertHall, short eventCode,
+                  LocalDateTime creationDateTime, boolean isPromo, char stadiumSector,
+                  double maxBackpackWeight, BigDecimal price) {
 
-        this.id = id;
-        this.eventCode = eventCode;
-        this.isPromo = isPromo;
-    }
-
-    public Ticket(int id, String concertHall, short eventCode, LocalDateTime creationDateTime,
-                  boolean isPromo, char stadiumSector, double maxBackpackWeight, BigDecimal price) {
-        if (id / 1000 > 9) {
-            throw new IllegalArgumentException("id should be less than 4 digits");
-        }
-        if (concertHall.length() > 10) {
+        super(id);
+        if(concertHall.length() > 10) {
             throw new IllegalArgumentException("max chars of concertHall should be les than 10");
+        } else {
+            this.concertHall = concertHall;
         }
         if (eventCode / 100 > 9) {
             throw new IllegalArgumentException("event code should be less than 4 digits");
+        } else {
+            this.eventCode = eventCode;
         }
         if (stadiumSector > 'C' || stadiumSector < 'A') {
             throw new IllegalArgumentException("sector should be in between of A to C");
+        } else {
+            this.stadiumSector = stadiumSector;
         }
 
-        this.id = id;
-        this.concertHall = concertHall;
-        this.eventCode = eventCode;
-        this.creationDateTime = creationDateTime;
+        this.creationDateTime = LocalDateTime.now();
+        this.isPromo = isPromo;
+        this.maxBackpackWeight = maxBackpackWeight;
+        this.price = price;
+    }
+
+    public Ticket(boolean isPromo, char stadiumSector, BigDecimal price){
         this.isPromo = isPromo;
         this.stadiumSector = stadiumSector;
-        this.maxBackpackWeight = maxBackpackWeight;
-        this.price = price.setScale(2, RoundingMode.DOWN);
+        this.price = price;
     }
 
-
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        if (id / 1000 > 9) {
-            throw new IllegalArgumentException("id should be less than 4 digits");
-        }
-        this.id = id;
-    }
 
     public String getConcertHall() {
         return concertHall;
     }
 
-    public void setConcertHall(String concertHall) {
-        if (concertHall.length() > 10) {
-            throw new IllegalArgumentException("max chars of concertHall should be les than 10");
-        }
-        this.concertHall = concertHall;
-    }
-
     public short getEventCode() {
         return eventCode;
-    }
-
-    public void setEventCode(short eventCode) {
-        if (eventCode / 100 > 9) {
-            throw new IllegalArgumentException("event code should be less than 4 digits");
-        }
-        this.eventCode = eventCode;
     }
 
     public LocalDateTime getCreationDateTime() {
@@ -104,10 +82,6 @@ public class Ticket {
 
     public boolean isPromo() {
         return isPromo;
-    }
-
-    public void setPromo(boolean promo) {
-        isPromo = promo;
     }
 
     public char getStadiumSector() {
@@ -125,35 +99,60 @@ public class Ticket {
         return maxBackpackWeight;
     }
 
-    public void setMaxBackpackWeight(double maxBackpackWeight) {
-        this.maxBackpackWeight = maxBackpackWeight;
-    }
 
     public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price.setScale(2, RoundingMode.DOWN);
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Ticket ticket = (Ticket) o;
-        return id == ticket.id && eventCode == ticket.eventCode && isPromo == ticket.isPromo && stadiumSector == ticket.stadiumSector && Double.compare(maxBackpackWeight, ticket.maxBackpackWeight) == 0 && Objects.equals(concertHall, ticket.concertHall) && Objects.equals(creationDateTime, ticket.creationDateTime) && Objects.equals(price, ticket.price);
+
+        return (Objects.equals(ticket.concertHall, concertHall)) &&
+        (Objects.equals(ticket.eventCode, eventCode)) &&
+        (Objects.equals(ticket.creationDateTime, creationDateTime)) &&
+        (Objects.equals(ticket.price, price)) &&
+        (ticket.stadiumSector == stadiumSector) &&
+        (ticket.isPromo == isPromo) &&
+        Double.compare(ticket.maxBackpackWeight, maxBackpackWeight) == 0;
+
+
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, concertHall, eventCode, creationDateTime, isPromo, stadiumSector, maxBackpackWeight, price);
+         int result = 0;
+         result = 31 * result + (creationDateTime != null ? creationDateTime.hashCode() : 0);
+         result = 31 * result + (isPromo ? 1 : 0);
+         result = 31 * result + (price != null ? price.hashCode() : 0);
+         result = 31 * result + (concertHall != null ? concertHall.hashCode() : 0);
+         if (Objects.nonNull(eventCode)) {
+            result = 31 * result + Short.hashCode(eventCode);
+         } else {
+             result = 0;
+         }
+         if (Objects.nonNull(stadiumSector)) {
+             result = 31 * result + Character.hashCode(stadiumSector);
+         } else {
+             result = 0;
+         }
+         if (Objects.nonNull(maxBackpackWeight)) {
+             result = 31 * result + Double.hashCode(maxBackpackWeight);
+         } else {
+             result = 0;
+         }
+
+         return result;
     }
 
     @Override
     public String toString() {
         return "Ticket{" +
-                "id=" + id +
+                "id=" +
                 ", concertHall='" + concertHall + '\'' +
                 ", eventCode=" + eventCode +
                 ", creationDateTime=" + creationDateTime +
@@ -165,4 +164,22 @@ public class Ticket {
     }
 
 
+    @Override
+    public void shareByPhone(String phoneNumber) {
+        if(PhoneNumberValidator.validatePhoneNumber(phoneNumber)){
+            System.out.println("Ticket was successfully sent via Phone Number: " + phoneNumber);
+        } else {
+            throw new IllegalArgumentException("Phone number does not exists!");
+        }
+
+    }
+
+    @Override
+    public void shareByEmail(String emailAddress, String subjectOfEmail, String textOfEmail) {
+        if(EmailAdressValidator.validateEmail(emailAddress)){
+            System.out.println("Ticket was successfully sent via Email: " + emailAddress);
+        } else {
+            throw new IllegalArgumentException("Email address does not exists");
+        }
+    }
 }
