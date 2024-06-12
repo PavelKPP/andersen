@@ -11,7 +11,7 @@ public class Admin extends User {
     public Admin() {
     }
 
-    public Admin(Long id) {
+    public Admin(long id) {
         super(id);
         this.role = Role.ADMIN;
     }

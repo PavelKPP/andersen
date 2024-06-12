@@ -2,6 +2,7 @@ package com.ticketservice.model;
 
 import com.ticketservice.abstraction.Entity;
 import com.ticketservice.abstraction.Share;
+import com.ticketservice.annotation.interfaces.NullableWarning;
 import com.ticketservice.validators.EmailAdressValidator;
 import com.ticketservice.validators.PhoneNumberValidator;
 
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 
 public class Ticket extends Entity implements Share {
 
+    @NullableWarning
     private String concertHall;
     private short eventCode;//
     private LocalDateTime creationDateTime;//
@@ -28,7 +30,7 @@ public class Ticket extends Entity implements Share {
 
     }
 
-    public Ticket(Long id, String concertHall, short eventCode,
+    public Ticket(long id, String concertHall, short eventCode,
                   LocalDateTime creationDateTime, boolean isPromo, char stadiumSector,
                   double maxBackpackWeight, BigDecimal price) {
 

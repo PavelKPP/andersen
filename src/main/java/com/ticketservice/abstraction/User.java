@@ -5,7 +5,7 @@ public abstract class User extends Entity {
 
     }
 
-    public User(Long id) {
+    public User(long id) {
         super(id);
     }
 

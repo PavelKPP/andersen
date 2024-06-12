@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 public class PhoneNumberValidator {
 
     public static boolean validatePhoneNumber(String phoneNumber) {
+        //Only us number will be validated as TRUE
         Pattern phoneNumberPattern = Pattern.compile("^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$");
         Matcher matcher = phoneNumberPattern.matcher(phoneNumber);
         boolean isValid = matcher.matches();

@@ -12,7 +12,7 @@ public class Client extends User {
 
     }
 
-    public Client(Long id) {
+    public Client(long id) {
         super(id);
         this.role = Role.CLIENT;
     }
